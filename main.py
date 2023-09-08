@@ -4,6 +4,8 @@ import os
 import mss
 import time
 import concurrent.futures
+import pyautogui
+import io
 
 class Agent:
     # Inicializar capturador de pantalla
@@ -24,13 +26,22 @@ class Agent:
         self.candyImages, self.referenceDict = self.loadReferenceImages()
 
     def sensor(self):
-        self.takeScreenshot()
-
-        board = cv2.imread("screenshot.png")
+        board = self.takeScreenshot()
 
         gameBoard = self.detectCandies(board, self.candyImages, self.referenceDict)
 
         return gameBoard
+    
+    def takeScreenshot(self):
+        time.sleep(3)
+
+        # Tomar screenshot
+        sctImg = self.sct.grab(self.monitor)
+
+        # Convertir a numpy array
+        imgNp = np.array(sctImg)
+
+        return cv2.cvtColor(imgNp, cv2.COLOR_BGRA2BGR)
 
     def loadReferenceImages(self):
         candyImages = []
@@ -45,16 +56,6 @@ class Agent:
             referenceDict[idx] = name
 
         return candyImages, referenceDict
-    
-    def takeScreenshot(self):
-        time.sleep(3)
-
-        # Tomar screenshot
-        sctImg = self.sct.grab(self.monitor)
-
-        # Convertir a numpy array
-        imgNp = np.array(sctImg)
-        cv2.imwrite("screenshot.png", imgNp)
 
     def detectCandies(self, board, candyImages, referenceDict):
         inicio = time.time()
