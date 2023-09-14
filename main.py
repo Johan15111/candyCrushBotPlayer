@@ -5,7 +5,7 @@ import mss
 import time
 import concurrent.futures
 import pyautogui
-import io
+import easyocr
 
 class Agent:
     # Inicializar capturador de pantalla
@@ -13,6 +13,7 @@ class Agent:
 
     # Dimensiones de la pantalla de juego
     monitor = {"top": 197, "left": 641, "width": 639, "height": 567}
+    scoreMonitor = {"top": 275, "left": 555, "width": 75, "height": 21}
 
     # Dimensiones fijas de cada cuadrícula
     tileWidth = monitor["width"] // 9
@@ -21,27 +22,76 @@ class Agent:
     candyImages = []
     referenceDict = {}
 
+    score = 0
+
     def __init__(self):
         # Cargar imagenes de referencia
         self.candyImages, self.referenceDict = self.loadReferenceImages()
+        self.scoreReader = easyocr.Reader(['en'], gpu=False)
 
     def sensor(self):
-        board = self.takeScreenshot()
+        board = self.takeScreenshot(self.monitor)
 
         gameBoard = self.detectCandies(board, self.candyImages, self.referenceDict)
 
         return gameBoard
     
-    def takeScreenshot(self):
-        time.sleep(3)
+    def pruebaPuntaje(self):
+        self.sensorScoreOCR(self.scoreMonitor)
+    
+    def sensorScoreOCR(self, monitor):
+        currentScore = 1
 
+        while self.score != currentScore:
+            scoreImage = self.takeScreenshot(monitor)
+            currentScore = self.scoreReader.readtext(scoreImage)
+            try:
+                currentScore = int(currentScore[0][-2])
+                self.score = currentScore
+            except:
+                pass
+            
+            time.sleep(0.5)
+        
+        print("Puntaje actual: ", self.score)
+    
+    def takeScreenshot(self, monitor):
         # Tomar screenshot
-        sctImg = self.sct.grab(self.monitor)
+        sctImg = self.sct.grab(monitor)
 
         # Convertir a numpy array
         imgNp = np.array(sctImg)
 
+        # Guard la imagen como PNG
+
+        cv2.imwrite("screenshot.png", imgNp)
+
         return cv2.cvtColor(imgNp, cv2.COLOR_BGRA2BGR)
+    
+    def actuator(self, action):
+        coordinates, direction = action
+
+        # Convierte las coordenadas en valores enteros
+        row, col = map(int, coordinates.split(','))
+
+        # Calcula las coordenadas en píxeles del centro de la cuadrícula
+        x_center = self.monitor["left"] + (col + 0.5) * self.tileWidth
+        y_center = self.monitor["top"] + (row + 0.5) * self.tileHeight
+
+        pyautogui.moveTo(x_center, y_center)
+        pyautogui.click()
+
+        # Realiza el movimiento según la dirección indicada
+        if direction == "U":
+            pyautogui.moveRel(0, -self.tileHeight)
+        elif direction == "D":
+            pyautogui.moveRel(0, self.tileHeight)
+        elif direction == "L":
+            pyautogui.moveRel(-self.tileWidth, 0)
+        elif direction == "R":
+            pyautogui.moveRel(self.tileWidth, 0)
+
+        pyautogui.click()
 
     def loadReferenceImages(self):
         candyImages = []
@@ -103,9 +153,15 @@ class Agent:
         return gameBoard
 
 if __name__ == "__main__":
-    agent = Agent()
-    gameBoard = agent.sensor()
+    time.sleep(3)
 
-    for row in gameBoard:
-        print("--".join(str(cell) if cell is not None else ' ' for cell in row))
-        print()
+    agent = Agent()
+
+    while True:
+        # agent.actuator(("3,2", "U"))
+        agent.pruebaPuntaje()
+
+        gameBoard = agent.sensor()
+
+        for row in gameBoard:
+            print("--".join(str(cell) if cell is not None else ' ' for cell in row))
