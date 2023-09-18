@@ -59,10 +59,6 @@ class Agent:
         # Convertir a numpy array
         imgNp = np.array(sctImg)
 
-        # Guard la imagen como PNG
-
-        cv2.imwrite("screenshot.png", imgNp)
-
         return cv2.cvtColor(imgNp, cv2.COLOR_BGRA2BGR)
     
     def actuator(self, action):
