@@ -6,6 +6,7 @@ import time
 import concurrent.futures
 import pyautogui
 import easyocr
+import findMove as fm
 
 class Agent:
     # Inicializar capturador de pantalla
@@ -36,10 +37,7 @@ class Agent:
 
         return gameBoard
     
-    def pruebaPuntaje(self):
-        self.sensorScoreOCR(self.scoreMonitor)
-    
-    def sensorScoreOCR(self, monitor):
+    def sensorScoreOCR(self, monitor=scoreMonitor):
         currentScore = 1
 
         while self.score != currentScore:
@@ -50,8 +48,7 @@ class Agent:
                 self.score = currentScore
             except:
                 pass
-            
-            time.sleep(0.5)
+            time.sleep(0.4)
         
         print("Puntaje actual: ", self.score)
     
@@ -72,7 +69,8 @@ class Agent:
         coordinates, direction = action
 
         # Convierte las coordenadas en valores enteros
-        row, col = map(int, coordinates.split(','))
+        row = int(coordinates[0])
+        col = int(coordinates[1])
 
         # Calcula las coordenadas en píxeles del centro de la cuadrícula
         x_center = self.monitor["left"] + (col + 0.5) * self.tileWidth
@@ -82,13 +80,13 @@ class Agent:
         pyautogui.click()
 
         # Realiza el movimiento según la dirección indicada
-        if direction == "U":
+        if direction == "u":
             pyautogui.moveRel(0, -self.tileHeight)
-        elif direction == "D":
+        elif direction == "d":
             pyautogui.moveRel(0, self.tileHeight)
-        elif direction == "L":
+        elif direction == "l":
             pyautogui.moveRel(-self.tileWidth, 0)
-        elif direction == "R":
+        elif direction == "r":
             pyautogui.moveRel(self.tileWidth, 0)
 
         pyautogui.click()
@@ -158,10 +156,13 @@ if __name__ == "__main__":
     agent = Agent()
 
     while True:
-        # agent.actuator(("3,2", "U"))
-        agent.pruebaPuntaje()
-
         gameBoard = agent.sensor()
 
-        for row in gameBoard:
-            print("--".join(str(cell) if cell is not None else ' ' for cell in row))
+        movements = fm.countMoves(gameBoard)
+        bestMove = fm.selectMove(movements)
+        
+        agent.actuator(bestMove)
+        agent.sensorScoreOCR()
+
+    """ for row in gameBoard:
+        print("--".join(str(cell) if cell is not None else ' ' for cell in row)) """

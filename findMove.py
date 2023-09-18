@@ -179,4 +179,4 @@ def selectMove(moves):
     for i in moves:
         if i[1][1] > best[1][1]:
             best = i
-    return [best[0], best[1][0]]
+    return ([best[0][1], best[0][0]], best[1][0])
