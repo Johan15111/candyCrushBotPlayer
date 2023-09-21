@@ -48,7 +48,7 @@ class Agent:
                 self.score = currentScore
             except:
                 pass
-            time.sleep(0.4)
+            time.sleep(0.15)
         
         print("Puntaje actual: ", self.score)
     
@@ -132,6 +132,8 @@ class Agent:
             if maxIdx is not None:
                 candy_name = referenceDict[maxIdx]
                 gameBoard[row][col] = candy_name
+            elif maxIdx is None:
+                gameBoard[row][col] = "N"
         
         # Utilizar concurrent.futures para paralelizar la detección
         with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -147,18 +149,22 @@ class Agent:
         return gameBoard
 
 if __name__ == "__main__":
-    time.sleep(3)
-
     agent = Agent()
+    
+    input("Are you ready? ")
 
-    while True:
+    time.sleep(1.5)
+
+    startTime = time.time()
+
+    while (time.time() - startTime) < 245:
         gameBoard = agent.sensor()
 
-        movements = fm.countMoves(gameBoard)
+        """ for row in gameBoard:
+            print("--".join(str(cell) if cell is not None else '*' for cell in row)) """
+
+        movements = fm.countMoves(gameBoard, 3.5, 3, 2.5, 2.5)
         bestMove = fm.selectMove(movements)
-        
+
         agent.actuator(bestMove)
         agent.sensorScoreOCR()
-
-    """ for row in gameBoard:
-        print("--".join(str(cell) if cell is not None else ' ' for cell in row)) """
