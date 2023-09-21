@@ -2,68 +2,135 @@
 def countDown(candyMatrix, coords, candy):
     matrixHeight = len(candyMatrix)
     result = 0
+    explosive = 0
+    vertical = 0
+    horizontal = 0
     posX = coords[0]
     posY = coords[1]
 
     gap = 1
+    if len(candy) == 2:
+        if candy[1] == "E":
+            explosive += 1
+        if candy[1] == "V":
+            vertical += 1
+        if candy[1] == "H":
+            horizontal += 1
 
     while posY + gap < matrixHeight:
-        if candyMatrix[posY + gap][posX] == candy:
+        if candyMatrix[posY + gap][posX][0] == candy[0]:
+            if len(candyMatrix[posY + gap][posX]) == 2:
+                if candyMatrix[posY + gap][posX][1] == "E":
+                    explosive += 1
+                if candyMatrix[posY + gap][posX][1] == "V":
+                    vertical += 1
+                if candyMatrix[posY + gap][posX][1] == "H":
+                    horizontal += 1
             result += 1
         else:
             break
         gap += 1
 
-    return result
+    return [result, explosive, vertical, horizontal]
 
 def countUp(candyMatrix, coords, candy):
     result = 0
+    explosive = 0
+    vertical = 0
+    horizontal = 0
     posX = coords[0]
     posY = coords[1]
 
     gap = 1
+    if len(candy) == 2:
+        if candy[1] == "E":
+            explosive += 1
+        if candy[1] == "V":
+            vertical += 1
+        if candy[1] == "H":
+            horizontal += 1
 
     while posY - gap >= 0:
-        if candyMatrix[posY - gap][posX] == candy:
+        if candyMatrix[posY - gap][posX][0] == candy:
+            if len(candyMatrix[posY - gap][posX]) == 2:
+                if candyMatrix[posY - gap][posX][1] == "E":
+                    explosive += 1
+                if candyMatrix[posY - gap][posX][1] == "V":
+                    vertical += 1
+                if candyMatrix[posY - gap][posX][1] == "H":
+                    horizontal += 1
             result += 1
         else:
             break
         gap += 1
 
-    return result
+    return [result, explosive, vertical, horizontal]
 
 def countLeft(candyMatrix, coords, candy):
     result = 0
+    explosive = 0
+    vertical = 0
+    horizontal = 0
     posX = coords[0]
     posY = coords[1]
 
     gap = 1
+    if len(candy) == 2:
+        if candy[1] == "E":
+            explosive += 1
+        if candy[1] == "V":
+            vertical += 1
+        if candy[1] == "H":
+            horizontal += 1
 
     while posX - gap >= 0:
-        if candyMatrix[posY][posX - gap] == candy:
+        if candyMatrix[posY][posX - gap][0] == candy:
+            if len(candyMatrix[posY][posX - gap]) == 2:
+                if candyMatrix[posY][posX - gap][1] == "E":
+                    explosive += 1
+                if candyMatrix[posY][posX - gap][1] == "V":
+                    vertical += 1
+                if candyMatrix[posY][posX - gap][1] == "H":
+                    horizontal += 1
             result += 1
         else:
             break
         gap += 1
 
-    return result
+    return [result, explosive, vertical, horizontal]
 
 def countRight(candyMatrix, coords, candy):
     matrixWidth = len(candyMatrix[0])
     result = 0
+    explosive = 0
+    vertical = 0
+    horizontal = 0
     posX = coords[0]
     posY = coords[1]
 
     gap = 1
-
+    if len(candy) == 2:
+        if candy[1] == "E":
+            explosive += 1
+        if candy[1] == "V":
+            vertical += 1
+        if candy[1] == "H":
+            horizontal += 1
     while posX + gap < matrixWidth:
-        if candyMatrix[posY][posX + gap] == candy:
+        if candyMatrix[posY][posX + gap][0] == candy:
+            if len(candyMatrix[posY][posX + gap]) == 2:
+                if candyMatrix[posY][posX + gap][1] == "E":
+                    explosive += 1
+                if candyMatrix[posY][posX + gap][1] == "V":
+                    vertical += 1
+                if candyMatrix[posY][posX + gap][1] == "H":
+                    horizontal += 1
             result += 1
         else:
             break
         gap += 1
 
-    return result
+    return [result, explosive, vertical, horizontal]
 
 # FUnctions that counts how many candies will be connected
 # if the candy moves in any direction
@@ -71,79 +138,116 @@ def lookDown(candyMatrix, coords):
     candy = candyMatrix[coords[1]][coords[0]]
     pointCoords = [coords[0], coords[1] + 1]
     result = 1
+    explosiveCandies = 0
+    verticalCandies = 0
+    horizontalCandies = 0
     # Counting the horizontal line
-    horizontal = (
-        countLeft(candyMatrix, pointCoords, candy) +
-        countRight(candyMatrix, pointCoords, candy)
-        )
+    leftCandies = countLeft(candyMatrix, pointCoords, candy)
+    rightCandies = countRight(candyMatrix, pointCoords, candy)
+    horizontal = leftCandies[0] + rightCandies[0]
     if horizontal >= 2:
+        explosiveCandies += leftCandies[1] + rightCandies[1]
+        verticalCandies += leftCandies[2] + rightCandies[2]
+        horizontalCandies += leftCandies[3] + rightCandies[3]
         result += horizontal
 
     # Counting the verticcal line
     vertical = countDown(candyMatrix, pointCoords, candy)
-    if vertical >= 2:
-        result += vertical
+    if vertical[0] >= 2:
+        explosiveCandies += vertical[1]
+        verticalCandies += vertical[2]
+        horizontalCandies += vertical[3]
+        result += vertical[0]
 
-    return result
+    return [result, explosiveCandies, verticalCandies, horizontalCandies]
 
 def lookUp(candyMatrix, coords):
     candy = candyMatrix[coords[1]][coords[0]]
     pointCoords = [coords[0], coords[1] - 1]
     result = 1
+    explosiveCandies = 0
+    verticalCandies = 0
+    horizontalCandies = 0
     # Counting the horizontal line
-    horizontal = (
-        countLeft(candyMatrix, pointCoords, candy) +
-        countRight(candyMatrix, pointCoords, candy)
-        )
+    leftCandies = countLeft(candyMatrix, pointCoords, candy)
+    rightCandies = countRight(candyMatrix, pointCoords, candy)
+    horizontal = leftCandies[0] + rightCandies[0]
+
     if horizontal >= 2:
+        explosiveCandies += leftCandies[1] + rightCandies[1]
+        verticalCandies += leftCandies[2] + rightCandies[2]
+        horizontalCandies += leftCandies[3] + rightCandies[3]
         result += horizontal
     
     # Counting the verticcal line
     vertical = countUp(candyMatrix, pointCoords, candy)
-    if vertical >= 2:
-        result += vertical
+    if vertical[0] >= 2:
+        explosiveCandies += vertical[1]
+        verticalCandies += vertical[2]
+        horizontalCandies += vertical[3]
+        result += vertical[0]
     
-    return result
+    return [result, explosiveCandies, verticalCandies, horizontalCandies]
 
 def lookLeft(candyMatrix, coords):
     candy = candyMatrix[coords[1]][coords[0]]
     pointCoords = [coords[0] - 1, coords[1]]
     result = 1
+    explosiveCandies = 0
+    verticalCandies = 0
+    horizontalCandies = 0
     # Counting the horizontal line
     horizontal = countLeft(candyMatrix, pointCoords, candy)
-    if horizontal >= 2:
-        result += horizontal
+    if horizontal[0] >= 2:
+        explosiveCandies += horizontal[1]
+        verticalCandies += horizontal[2]
+        horizontalCandies += horizontal[3]
+        result += horizontal[0]
     
     # Counting the verticcal line
-    horizontal = (
-        countDown(candyMatrix, pointCoords, candy) +
-        countUp(candyMatrix, pointCoords, candy)
-        )
-    if horizontal >= 2:
-        result += horizontal
+    downCandies = countDown(candyMatrix, pointCoords, candy)
+    upCandies = countUp(candyMatrix, pointCoords, candy)
+    vertical = downCandies[0] + upCandies[0]
 
-    return result
+    if vertical >= 2:
+        explosiveCandies += downCandies[1] + upCandies[1]
+        verticalCandies += downCandies[2] + upCandies[1]
+        horizontalCandies += downCandies[3] + upCandies[1]
+        result += vertical
+
+    return [result, explosiveCandies, verticalCandies, horizontalCandies]
 
 def lookRight(candyMatrix, coords):
     candy = candyMatrix[coords[1]][coords[0]]
     pointCoords = [coords[0] + 1, coords[1]]
     result = 1
+    explosiveCandies = 0
+    verticalCandies = 0
+    horizontalCandies = 0
     # Counting the horizontal line
     horizontal = countRight(candyMatrix, pointCoords, candy)
-    if horizontal >= 2:
-        result += horizontal
+    if horizontal[0] >= 2:
+        explosiveCandies += horizontal[1]
+        verticalCandies += horizontal[2]
+        horizontalCandies += horizontal[3]
+        result += horizontal[0]
     
     # Counting the verticcal line
-    horizontal = (
-        countDown(candyMatrix, pointCoords, candy) +
-        countUp(candyMatrix, pointCoords, candy)
-        )
-    if horizontal >= 2:
-        result += horizontal
-        
-    return result
+    downCandies = countDown(candyMatrix, pointCoords, candy)
+    upCandies = countUp(candyMatrix, pointCoords, candy)
+    vertical = downCandies[0] + upCandies[0]
 
-def countMoves(candyMatrix):
+    if vertical >= 2:
+        explosiveCandies += downCandies[1] + upCandies[1]
+        verticalCandies += downCandies[2] + upCandies[1]
+        horizontalCandies += downCandies[3] + upCandies[1]       
+        result += vertical
+
+    return [result, explosiveCandies, verticalCandies, horizontalCandies]
+
+# FUnction that find the posible moves in the matrix and assign a score
+def countMoves(candyMatrix, brownScore, explosiveMultiplier, verticalMultiplier, 
+               horizontalMultiplier):
     matrixHeight = len(candyMatrix)
     matrixWidth = len(candyMatrix[0])
     yRoute = range(matrixHeight - 1, -1, -1)
@@ -153,25 +257,93 @@ def countMoves(candyMatrix):
     for i in yRoute:
         for j in xRoute:
             down = 0
-            up = 0
-            left = 0
-            right = 0
+            downExplosive = 0
+            downVertical = 0
+            downHorizontal = 0
             if i != matrixHeight - 1:
-                down = lookDown(candyMatrix, [j, i])
+                downCandies = lookDown(candyMatrix, [j, i])
+                down = downCandies[0]
+                downExplosive = downCandies[1]
+                downVertical = downCandies[2]
+                downHorizontal = downCandies[3]
+
+            up = 0
+            upExplosive = 0
+            upVertical = 0
+            upHorizontal = 0
             if i != 0:
-                up = lookUp(candyMatrix, [j, i])
+                upCandies = lookUp(candyMatrix, [j, i])
+                up = upCandies[0]
+                upExplosive = upCandies[1]
+                upVertical = upCandies[2]
+                upHorizontal = upCandies[3]
+
+            left = 0
+            leftExplosive = 0
+            leftVertical = 0
+            leftHorizontal = 0
             if j != 0:
-                left = lookLeft(candyMatrix, [j, i])
+                leftCandies = lookLeft(candyMatrix, [j, i])
+                left = leftCandies[0]
+                leftExplosive = leftCandies[1]
+                leftVertical = leftCandies[2]
+                leftHorizontal = leftCandies[3]
+
+            right = 0
+            rightExplosive = 0
+            rightVertical = 0
+            rightHorizontal = 0
             if j != matrixWidth - 1:
-                right = lookRight(candyMatrix, [j, i])
-            if down > 1:
-                moves.append([[j, i], ["d", down]])
-            if up > 1:
-                moves.append([[j, i], ["u", up]])
-            if left > 1:
-                moves.append([[j, i], ["l", left]])
-            if right > 1:
-                moves.append([[j, i], ["r", right]])
+                rightCandies = lookRight(candyMatrix, [j, i])
+                right = rightCandies[0]
+                rightExplosive = rightCandies[1]
+                rightVertical = rightCandies[2]
+                rightHorizontal = rightCandies[3]
+            
+            # Find simple combos
+            if down >= 3:
+                downScore = (
+                    down + 
+                    downExplosive * explosiveMultiplier +
+                    downVertical * verticalMultiplier +
+                    downHorizontal * horizontalMultiplier
+                )
+                moves.append([[j, i], ["d", downScore]])
+
+            if up >= 3:
+                upScore = (
+                    up + 
+                    upExplosive * explosiveMultiplier +
+                    upVertical * verticalMultiplier +
+                    upHorizontal * horizontalMultiplier
+                )
+                moves.append([[j, i], ["u", upScore]])
+
+            if left >= 3:
+                leftScore = (
+                    left + 
+                    leftExplosive * explosiveMultiplier +
+                    leftVertical * verticalMultiplier +
+                    leftHorizontal * horizontalMultiplier
+                )
+                moves.append([[j, i], ["l", leftScore]])
+
+            if right >= 3:
+                rightScore = (
+                    right + 
+                    rightExplosive * explosiveMultiplier +
+                    rightVertical * verticalMultiplier +
+                    rightHorizontal * horizontalMultiplier
+                )
+                moves.append([[j, i], ["r", rightScore]])
+
+            # Find brown candies
+            if candyMatrix[i][j][0] == "C":
+                if i != matrixHeight - 1:
+                    moves.append([[j, i], ["d", brownScore]])
+                else:
+                    moves.append([[j, i], ["u", brownScore]])
+
     return moves
 
 def selectMove(moves):
