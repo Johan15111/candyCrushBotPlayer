@@ -38,20 +38,28 @@ class Agent:
         return gameBoard
     
     def sensorScoreOCR(self, monitor=scoreMonitor):
-        currentScore = 1
+        maxIterations = 5
+        iterations = 0
 
-        while self.score != currentScore:
+        while iterations < maxIterations:
             scoreImage = self.takeScreenshot(monitor)
-            currentScore = self.scoreReader.readtext(scoreImage)
             try:
+                currentScore = self.scoreReader.readtext(scoreImage)
                 currentScore = int(currentScore[0][-2])
+
+                if currentScore == self.score:
+                    break
+
                 self.score = currentScore
-            except:
+            except (ValueError, IndexError):
                 pass
-            time.sleep(0.15)
-        
-        print("Puntaje actual: ", self.score)
-    
+
+            iterations += 1
+            time.sleep(0.08)
+
+    def compute(self):
+        return fm.countMoves(gameBoard, 3.5, 3, 2.5, 2.5)
+
     def takeScreenshot(self, monitor):
         # Tomar screenshot
         sctImg = self.sct.grab(monitor)
@@ -102,7 +110,6 @@ class Agent:
         return candyImages, referenceDict
 
     def detectCandies(self, board, candyImages, referenceDict):
-        inicio = time.time()
         boardHeight, boardWidth = board.shape[:2]
         
         # Matriz 9x9 para los dulces del tablero
@@ -143,9 +150,6 @@ class Agent:
                     col = x // self.tileWidth
                     executor.submit(process_tile, x, y, row, col)
         
-        fin = time.time()
-        print("Tiempo de ejecución deteccion: ", (fin - inicio) * 1000)
-        
         return gameBoard
 
 if __name__ == "__main__":
@@ -160,11 +164,8 @@ if __name__ == "__main__":
     while (time.time() - startTime) < 245:
         gameBoard = agent.sensor()
 
-        """ for row in gameBoard:
-            print("--".join(str(cell) if cell is not None else '*' for cell in row)) """
-
-        movements = fm.countMoves(gameBoard, 3.5, 3, 2.5, 2.5)
-        bestMove = fm.selectMove(movements)
+        bestMove = agent.compute()
 
         agent.actuator(bestMove)
+
         agent.sensorScoreOCR()
