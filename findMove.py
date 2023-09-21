@@ -260,6 +260,7 @@ def countMoves(candyMatrix, brownScore, explosiveMultiplier, verticalMultiplier,
             downExplosive = 0
             downVertical = 0
             downHorizontal = 0
+
             if i != matrixHeight - 1:
                 downCandies = lookDown(candyMatrix, [j, i])
                 down = downCandies[0]
@@ -344,9 +345,6 @@ def countMoves(candyMatrix, brownScore, explosiveMultiplier, verticalMultiplier,
                 else:
                     moves.append([[j, i], ["u", brownScore]])
 
-    return moves
-
-def selectMove(moves):
     if len(moves) == 0:
         return ([0, 0], "d")
     best = moves[0]
@@ -354,3 +352,4 @@ def selectMove(moves):
         if i[1][1] > best[1][1]:
             best = i
     return ([best[0][1], best[0][0]], best[1][0])
+    
