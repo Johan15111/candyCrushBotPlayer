@@ -261,18 +261,18 @@ def countMoves(candyMatrix, brownScore, explosiveMultiplier, verticalMultiplier,
             downVertical = 0
             downHorizontal = 0
             # Verify if found 2 super candies joint
-            if len(candyMatrix[i][j]) == "2":
+            if len(candyMatrix[i][j]) == 2:
                 if i != matrixHeight - 1:
-                    if len(candyMatrix[i + 1][j]) == "2":
+                    if len(candyMatrix[i + 1][j]) == 2:
                         return ([i, j], "d")
                 if i != 0:
-                    if len(candyMatrix[i - 1][j]) == "2":
+                    if len(candyMatrix[i - 1][j]) == 2:
                         return ([i, j], "u")
                 if j != 0:
-                    if len(candyMatrix[i][j - 1]) == "2":
+                    if len(candyMatrix[i][j - 1]) == 2:
                         return ([i, j], "l")
                 if j != matrixWidth - 1:
-                    if len(candyMatrix[i][j + 1]) == "2":
+                    if len(candyMatrix[i][j + 1]) == 2:
                         return ([i, j], "r")
 
             if i != matrixHeight - 1:
