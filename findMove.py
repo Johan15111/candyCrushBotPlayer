@@ -347,6 +347,8 @@ def countMoves(candyMatrix, brownScore, explosiveMultiplier, verticalMultiplier,
     return moves
 
 def selectMove(moves):
+    if len(moves == 0):
+        return ([0, 0], "d")
     best = moves[0]
     for i in moves:
         if i[1][1] > best[1][1]:
