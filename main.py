@@ -38,7 +38,7 @@ class Agent:
         return gameBoard
     
     def sensorScoreOCR(self, monitor=scoreMonitor):
-        maxIterations = 5
+        maxIterations = 20
         iterations = 0
 
         while iterations < maxIterations:
@@ -55,10 +55,10 @@ class Agent:
                 pass
 
             iterations += 1
-            time.sleep(0.08)
+            # time.sleep(0.08)
 
     def compute(self):
-        return fm.countMoves(gameBoard, 3.5, 3, 2.5, 2.5)
+        return fm.countMoves(gameBoard, 3.5, 3, 3.5, 3.5)
 
     def takeScreenshot(self, monitor):
         # Tomar screenshot
@@ -116,6 +116,14 @@ class Agent:
         gameBoard = [[None] * 9 for _ in range(9)]
         
         def process_tile(x, y, row, col):
+            if row == 0:
+                if col == 3:
+                    gameBoard[row][col] = "3"
+                    return
+                elif col == 4:
+                    gameBoard[row][col] = "4"
+                    return
+
             # Recorta la cuadrícula actual del tablero
             tile = board[y : y + self.tileHeight, x : x + self.tileWidth]
 
@@ -161,11 +169,13 @@ if __name__ == "__main__":
 
     startTime = time.time()
 
-    while (time.time() - startTime) < 245:
+    while (time.time() - startTime) < 250:
         gameBoard = agent.sensor()
+        """ for row in gameBoard:
+            print("--".join(str(cell) if cell is not None else '*' for cell in row)) """
 
         bestMove = agent.compute()
 
         agent.actuator(bestMove)
 
-        agent.sensorScoreOCR()
+        # agent.sensorScoreOCR()

@@ -11,5 +11,5 @@ matrix = [
     ["R", "R", "P", "Y", "B", "Y", "G", "P", "Y"]
 ]
 
-print(fm.countMoves(matrix, 3.5, 4, 3, 2.5))
+print(fm.countMoves(matrix, 3.5, 3, 3.5, 3.5))
 # No está revisando el dulce actual
