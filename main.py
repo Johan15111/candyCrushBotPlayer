@@ -6,6 +6,7 @@ import time
 import concurrent.futures
 import pyautogui
 import easyocr
+from skimage.metrics import structural_similarity as compare_ssim
 import findMove as fm
 
 class Agent:
@@ -24,14 +25,17 @@ class Agent:
     referenceDict = {}
 
     score = 0
+    lastBoard = None
 
     def __init__(self):
         # Cargar imagenes de referencia
         self.candyImages, self.referenceDict = self.loadReferenceImages()
-        self.scoreReader = easyocr.Reader(['en'], gpu=False)
+        # 
+        # self.scoreReader = easyocr.Reader(['en'], gpu=False)
 
     def sensor(self):
         board = self.takeScreenshot(self.monitor)
+        self.lastBoard = board
 
         gameBoard = self.detectCandies(board, self.candyImages, self.referenceDict)
 
@@ -55,7 +59,6 @@ class Agent:
                 pass
 
             iterations += 1
-            # time.sleep(0.08)
 
     def compute(self):
         return fm.countMoves(gameBoard, 3.5, 3, 3.5, 3.5)
@@ -159,6 +162,21 @@ class Agent:
                     executor.submit(process_tile, x, y, row, col)
         
         return gameBoard
+    
+    def waitBoardStabilise(self):
+        similarity = 0
+        iteraciones = 0
+        for i in range(40):
+            currentBoard = self.takeScreenshot(self.monitor)
+
+            similarity = compare_ssim(currentBoard, self.lastBoard, multichannel=True, channel_axis=2)
+
+            self.lastBoard = currentBoard
+
+            iteraciones += 1
+
+            if similarity >= 0.95:
+                break
 
 if __name__ == "__main__":
     agent = Agent()
@@ -171,11 +189,9 @@ if __name__ == "__main__":
 
     while (time.time() - startTime) < 250:
         gameBoard = agent.sensor()
-        """ for row in gameBoard:
-            print("--".join(str(cell) if cell is not None else '*' for cell in row)) """
 
         bestMove = agent.compute()
 
         agent.actuator(bestMove)
 
-        # agent.sensorScoreOCR()
+        agent.waitBoardStabilise()
