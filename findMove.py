@@ -245,6 +245,19 @@ def lookRight(candyMatrix, coords):
 
     return [result, explosiveCandies, verticalCandies, horizontalCandies]
 
+def countCandiesPerColor(candyMatrix):
+    candiesPerColor = {}
+    for row in candyMatrix:
+        for candy in row:
+            foundedFlag = False
+            for founded in candiesPerColor:
+                if candy[0] == founded:
+                    candiesPerColor[founded] += 1
+                    foundedFlag = True
+            if foundedFlag != True:
+                candiesPerColor[candy[0]] = 1
+    return candiesPerColor
+
 # FUnction that find the posible moves in the matrix and assign a score
 def countMoves(candyMatrix, brownScore, explosiveMultiplier, verticalMultiplier, 
                horizontalMultiplier):
@@ -368,12 +381,27 @@ def countMoves(candyMatrix, brownScore, explosiveMultiplier, verticalMultiplier,
                 )
                 moves.append([[j, i], ["r", rightScore]])
 
-            # Find brown candies
+            # Rate brown candies
+            candiesPerColor = countCandiesPerColor(candyMatrix)
             if candyMatrix[i][j][0] == "C":
                 if i != matrixHeight - 1:
+                    bDown = candiesPerColor[candyMatrix[i + 1][j][0]]
+                if i != 0:
+                    bUp = candiesPerColor[candyMatrix[i - 1][j][0]]
+                if j != 0:
+                    bLeft = candiesPerColor[candyMatrix[i][j - 1][0]]
+                if j != matrixWidth - 1:
+                    bRight = candiesPerColor[candyMatrix[i][j + 1][0]]
+                highest = max(bDown, bUp, bLeft, bRight)
+
+                if highest == bDown:
                     moves.append([[j, i], ["d", brownScore]])
-                else:
+                elif highest == bUp:
                     moves.append([[j, i], ["u", brownScore]])
+                elif highest == bLeft:
+                    moves.append([[j, i], ["l", brownScore]])
+                else:
+                    moves.append([[j, i], ["r", brownScore]])
 
     if len(moves) == 0:
         return ([0, 0], "d")
