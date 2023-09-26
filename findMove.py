@@ -51,7 +51,7 @@ def countUp(candyMatrix, coords, candy):
             horizontal += 1
 
     while posY - gap >= 0:
-        if candyMatrix[posY - gap][posX][0] == candy:
+        if candyMatrix[posY - gap][posX][0] == candy[0]:
             if len(candyMatrix[posY - gap][posX]) == 2:
                 if candyMatrix[posY - gap][posX][1] == "E":
                     explosive += 1
@@ -84,7 +84,7 @@ def countLeft(candyMatrix, coords, candy):
             horizontal += 1
 
     while posX - gap >= 0:
-        if candyMatrix[posY][posX - gap][0] == candy:
+        if candyMatrix[posY][posX - gap][0] == candy[0]:
             if len(candyMatrix[posY][posX - gap]) == 2:
                 if candyMatrix[posY][posX - gap][1] == "E":
                     explosive += 1
@@ -117,7 +117,7 @@ def countRight(candyMatrix, coords, candy):
         if candy[1] == "H":
             horizontal += 1
     while posX + gap < matrixWidth:
-        if candyMatrix[posY][posX + gap][0] == candy:
+        if candyMatrix[posY][posX + gap][0] == candy[0]:
             if len(candyMatrix[posY][posX + gap]) == 2:
                 if candyMatrix[posY][posX + gap][1] == "E":
                     explosive += 1
