@@ -5,7 +5,6 @@ import mss
 import time
 import concurrent.futures
 import pyautogui
-import easyocr
 from skimage.metrics import structural_similarity as compare_ssim
 import findMove as fm
 
@@ -30,8 +29,6 @@ class Agent:
     def __init__(self):
         # Cargar imagenes de referencia
         self.candyImages, self.referenceDict = self.loadReferenceImages()
-        # 
-        # self.scoreReader = easyocr.Reader(['en'], gpu=False)
 
     def sensor(self):
         board = self.takeScreenshot(self.monitor)
@@ -165,15 +162,13 @@ class Agent:
     
     def waitBoardStabilise(self):
         similarity = 0
-        iteraciones = 0
+
         for i in range(40):
             currentBoard = self.takeScreenshot(self.monitor)
 
             similarity = compare_ssim(currentBoard, self.lastBoard, multichannel=True, channel_axis=2)
 
             self.lastBoard = currentBoard
-
-            iteraciones += 1
 
             if similarity >= 0.95:
                 break
@@ -193,5 +188,11 @@ if __name__ == "__main__":
         bestMove = agent.compute()
 
         agent.actuator(bestMove)
+
+        """ for row in gameBoard:
+            print("--".join(str(cell) if cell is not None else '*' for cell in row))
+        print(bestMove)
+        
+        print() """
 
         agent.waitBoardStabilise()
