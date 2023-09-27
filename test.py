@@ -11,5 +11,6 @@ matrix = [
     ["P", "G", "O", "Y", "P", "O", "O", "G", "B"]
 ]
 
+print(fm.countCandiesPerColor(matrix))
 print(fm.countMoves(matrix, 3.5, 3, 3.5, 3.5))
 # No está revisando el dulce actual
