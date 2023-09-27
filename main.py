@@ -37,25 +37,6 @@ class Agent:
         gameBoard = self.detectCandies(board, self.candyImages, self.referenceDict)
 
         return gameBoard
-    
-    def sensorScoreOCR(self, monitor=scoreMonitor):
-        maxIterations = 20
-        iterations = 0
-
-        while iterations < maxIterations:
-            scoreImage = self.takeScreenshot(monitor)
-            try:
-                currentScore = self.scoreReader.readtext(scoreImage)
-                currentScore = int(currentScore[0][-2])
-
-                if currentScore == self.score:
-                    break
-
-                self.score = currentScore
-            except (ValueError, IndexError):
-                pass
-
-            iterations += 1
 
     def compute(self):
         return fm.countMoves(gameBoard, 3.5, 3, 3.5, 3.5)
@@ -163,7 +144,7 @@ class Agent:
     def waitBoardStabilise(self):
         similarity = 0
 
-        for i in range(40):
+        for i in range(30):
             currentBoard = self.takeScreenshot(self.monitor)
 
             similarity = compare_ssim(currentBoard, self.lastBoard, multichannel=True, channel_axis=2)
@@ -188,11 +169,5 @@ if __name__ == "__main__":
         bestMove = agent.compute()
 
         agent.actuator(bestMove)
-
-        """ for row in gameBoard:
-            print("--".join(str(cell) if cell is not None else '*' for cell in row))
-        print(bestMove)
-        
-        print() """
 
         agent.waitBoardStabilise()
