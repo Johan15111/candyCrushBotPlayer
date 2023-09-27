@@ -274,6 +274,21 @@ def countMoves(candyMatrix, brownScore, explosiveMultiplier, verticalMultiplier,
             downVertical = 0
             downHorizontal = 0
 
+             # Verify if can be joint a brown candy with a super candy
+            if candyMatrix[i][j][0] == "C":
+                if i != matrixHeight - 1:
+                    if candyMatrix[i + 1][j][0] == "C":
+                        return ([i, j], "d")
+                if i != 0:
+                    if candyMatrix[i - 1][j][0] == "C":
+                        return ([i, j], "u")
+                if j != 0:
+                    if candyMatrix[i][j - 1] == "C":
+                        return ([i, j], "l")
+                if j != matrixWidth - 1:
+                    if candyMatrix[i][j + 1][0] == "C":
+                        return ([i, j], "r")
+                    
             # Verify if can be joint a brown candy with a super candy
             if candyMatrix[i][j][0] == "C":
                 if i != matrixHeight - 1:
@@ -384,6 +399,10 @@ def countMoves(candyMatrix, brownScore, explosiveMultiplier, verticalMultiplier,
             # Rate brown candies
             if candyMatrix[i][j][0] == "C":
                 candiesPerColor = countCandiesPerColor(candyMatrix)
+                bDown = 0
+                bUp = 0
+                bLeft = 0
+                bRight = 0
                 if i != matrixHeight - 1:
                     bDown = candiesPerColor[candyMatrix[i + 1][j][0]]
                 if i != 0:
