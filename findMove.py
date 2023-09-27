@@ -382,8 +382,8 @@ def countMoves(candyMatrix, brownScore, explosiveMultiplier, verticalMultiplier,
                 moves.append([[j, i], ["r", rightScore]])
 
             # Rate brown candies
-            candiesPerColor = countCandiesPerColor(candyMatrix)
             if candyMatrix[i][j][0] == "C":
+                candiesPerColor = countCandiesPerColor(candyMatrix)
                 if i != matrixHeight - 1:
                     bDown = candiesPerColor[candyMatrix[i + 1][j][0]]
                 if i != 0:
